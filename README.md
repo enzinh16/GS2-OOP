@@ -1,37 +1,28 @@
+
 # Global Solution 2º/2026 - POO: Territory Predictive Insights
 
-Sistema de monitoramento territorial em console, feito em Java. Ele lê sensores simulados, valida cada leitura, grava no banco, **prevê** o próximo valor a partir do histórico e emite alertas **ATENÇÃO / ALERTA / CRÍTICO** explicando o motivo.
+Trabalho da Global Solution 2026/2 de POO. É um sistema de monitoramento territorial feito em Java, que funciona pelo console. Ele recebe dados de sensores simulados, verifica se as informações são válidas, armazena tudo em um banco de dados e faz previsões. Quando identifica algum risco, gera um alerta de ATENÇÃO, ALERTA ou CRÍTICO, informando o sensor, o valor registrado e o limite atingido.
 
+## Problema e público beneficiado
 
-## Recorte e público beneficiado
+**Problema escolhido: chuvas intensas e risco de alagamentos.**
 
-**Recorte escolhido: chuva intensa e risco de alagamento em pontos vulneráveis.**
+O sistema monitora sinais como volume de chuva, nível dos córregos e saturação do solo para identificar possíveis alagamentos.
 
-Alagamento se repete todo ano em muitos bairros e quase sempre dá sinais antes: a chuva aperta, o córrego começa a subir e o solo já não absorve mais água. Esses sinais estão em medidas diferentes, e é isso que o sistema acompanha.
+**Quem é afetado:** moradores de regiões baixas e próximas a córregos, que podem sofrer perdas materiais, dificuldades de locomoção e riscos de deslizamento.
 
-**Quem sofre com o problema:** as famílias que vivem nas partes baixas e nas margens de córregos urbanos. Quando a água sai da margem, elas perdem móveis, ficam sem conseguir sair de casa e, nas encostas, correm risco de deslizamento.
+**Quem utiliza o sistema:** associações de bairro e Defesa Civil, que podem usar os alertas para orientar moradores, reforçar a vigilância e preparar abrigos ou planos de emergência.
 
-**Quem usaria o sistema:** a coordenação de uma associação de bairro ou a Defesa Civil local. A pergunta que ele ajuda a responder é: *"o córrego vai transbordar nas próximas horas e o que dá para fazer hoje?"*. Com o alerta em mãos, a coordenação pode reforçar a vigilância, avisar quem mora nas áreas baixas, deixar um abrigo de prontidão ou acionar o plano de contingência. **O sistema não decide nada disso sozinho:** ele mostra os números e o motivo do alerta para quem vai decidir.
+**O território** é fictício e descrito só por região e equipamento, nunca por pessoas: _Córrego da Várzea, Zona Leste_. O sistema não guarda dados pessoais.
 
-**O território** é fictício e descrito só por região e equipamento, nunca por pessoas: *Córrego da Várzea, Zona Leste*. O sistema não guarda dados pessoais.
+## Como compilar e rodar
 
-**Por que estes três sensores:** cada um mostra uma parte do mesmo problema.
-
-| Sensor | Tipo | O que mede | Por que importa para alagamento |
-|---|---|---|---|
-| `PLU-01` pluviômetro | `chuva` | intensidade da chuva (mm/h) | é a **causa**: o primeiro sinal de risco |
-| `NIV-01` nível do córrego | `nivel` | altura da água (cm) | é o **efeito**: sobe com atraso e mostra quando a água vai sair da margem |
-| `UMI-01` umidade do solo | `umidade` | saturação do solo (%) | é a **condição**: solo encharcado não absorve mais chuva e a água escorre para o córrego |
-
-## Como compilar, testar e rodar
-
-**Requisitos:** JDK 17 ou superior e Maven 3.9 ou superior. Nada mais precisa ser instalado: o banco H2 vem como dependência do Maven.
+**Requisitos:** JDK 17 ou superior e Maven 3.9 ou superior.
 
 Na pasta que contém o `pom.xml`:
 
 ```bash
-mvn clean test           # compila e roda os testes (JUnit 5 + Mockito)
-mvn compile exec:java    # abre o menu do sistema
+mvn compile exec:java    # compila e abre o menu do sistema
 ```
 
 O banco é um **H2 em arquivo**, criado automaticamente em `./dados/territorio.mv.db` na primeira execução. As tabelas vêm de `src/main/resources/schema.sql`. Por isso rode sempre a partir da pasta do projeto, para usar o mesmo banco. O histórico sobrevive ao reiniciar o programa. Para começar do zero, apague a pasta `dados/`.
@@ -66,20 +57,79 @@ O banco é um **H2 em arquivo**, criado automaticamente em `./dados/territorio.m
 
 ```text
 src/main/java/
-├── dominio/       ComponenteTerritorial, StatusComponente, Sensor, SensorSimulado,
-│                  SensorPluviometro, SensorNivelCorrego, SensorUmidadeSolo,
-│                  Medicao, Alerta, NivelAlerta, Limiares, DadosTerritorio,
-│                  EstrategiaPrevisao, PrevisaoMediaMovel, PrevisaoComparacao, ResultadoPrevisao
-├── excecao/       DadosInvalidosException, FonteIndisponivelException
-├── persistencia/  FabricaConexao, MedicaoDAO, AlertaDAO
-├── servico/       FabricaPrevisao, TipoPrevisao, ServicoMonitoramento,
-│                  AvaliacaoPrevisao, ExportadorCSV
-└── SistemaMonitoramento.java   (menu principal)
-src/main/resources/schema.sql   (tabelas medicao e alerta)
-src/test/java/                  (testes JUnit 5 e Mockito, mesma divisão em pacotes)
+├── SistemaMonitoramento.java
+├── dominio/
+│   ├── Alerta.java
+│   ├── ComponenteTerritorial.java
+│   ├── DadosTerritorio.java
+│   ├── EstrategiaPrevisao.java
+│   ├── Limiares.java
+│   ├── Medicao.java
+│   ├── NivelAlerta.java
+│   ├── PrevisaoComparacao.java
+│   ├── PrevisaoMediaMovel.java
+│   ├── ResultadoPrevisao.java
+│   ├── Sensor.java
+│   ├── SensorNivelCorrego.java
+│   ├── SensorPluviometro.java
+│   ├── SensorSimulado.java
+│   ├── SensorUmidadeSolo.java
+│   └── StatusComponente.java
+├── excecao/
+│   ├── DadosInvalidosException.java
+│   └── FonteIndisponivelException.java
+├── persistencia/
+│   ├── AlertaDAO.java
+│   ├── FabricaConexao.java
+│   └── MedicaoDAO.java
+└── servico/
+    ├── AvaliacaoPrevisao.java
+    ├── ExportadorCSV.java
+    ├── FabricaPrevisao.java
+    ├── ServicoMonitoramento.java
+    └── TipoPrevisao.java
+
+src/main/resources/
+└── schema.sql
+
+src/test/java/
+├── dominio/
+│   ├── AlertaTest.java
+│   ├── DadosTerritorioTest.java
+│   ├── Historicos.java
+│   ├── LimiaresTest.java
+│   ├── MedicaoTest.java
+│   ├── PrevisaoComparacaoTest.java
+│   ├── PrevisaoMediaMovelTest.java
+│   └── SensorTest.java
+├── persistencia/
+│   ├── AlertaDAOTest.java
+│   └── MedicaoDAOTest.java
+└── servico/
+    ├── ExportadorCSVTest.java
+    ├── FabricaPrevisaoTest.java
+    └── ServicoMonitoramentoTest.java
 ```
 
-Os pacotes seguem a estrutura sugerida no enunciado.
+## Sensores e limiares
+
+**Sensores.** Cada um mostra uma parte do mesmo problema.
+
+| Sensor | Tipo | O que mede | Por que importa para alagamento |
+|---|---|---|---|
+| `PLU-01` pluviômetro | `chuva` | intensidade da chuva (mm/h) | é a **causa**: o primeiro sinal de risco |
+| `NIV-01` nível do córrego | `nivel` | altura da água (cm) | é o **efeito**: sobe com atraso e mostra quando a água vai sair da margem |
+| `UMI-01` umidade do solo | `umidade` | saturação do solo (%) | é a **condição**: solo encharcado não absorve mais chuva e a água escorre para o córrego |
+
+**Limiares.** Cada tipo de sensor tem três limites crescentes: ao atingir o primeiro, o sistema emite ATENÇÃO; o segundo, ALERTA; o terceiro, CRÍTICO. Os valores iniciais são **parâmetros de simulação escolhidos pela equipe, não valores oficiais**. Uma leitura fora da faixa física é recusada como inválida e não vai para o banco.
+
+| Sensor | Faixa física válida | ATENÇÃO | ALERTA | CRÍTICO |
+|---|---|---|---|---|
+| Chuva (mm/h) | 0 a 300 | 20 | 40 | 70 |
+| Nível do córrego (cm) | 0 a 400 | 90 | 120 | 150 |
+| Umidade do solo (%) | 0 a 100 | 70 | 80 | 90 |
+
+A coordenação pode alterar os limiares pelo menu (opção 5), com o código de acesso. Os valores alterados valem só até fechar o programa.
 
 ## Decisões de projeto
 
@@ -92,13 +142,6 @@ Os pacotes seguem a estrutura sugerida no enunciado.
 - **`DadosTerritorio`**: atributos privados, **código de acesso** para alterar limiares e limiares **por tipo de sensor**. Com código errado ou limiar inválido, nada muda (o novo `Limiares` é criado e validado antes de substituir o antigo).
 - **`NivelAlerta`** (enum): NORMAL, ATENÇÃO, ALERTA e CRÍTICO, cada um com uma orientação escrita como **sugestão** ("avaliar", "considerar"), não como ordem.
 
-Limiares iniciais (**parâmetros de simulação** escolhidos pela equipe, não valores oficiais):
-
-| Sensor | Faixa física válida | ATENÇÃO | ALERTA | CRÍTICO |
-|---|---|---|---|---|
-| Chuva (mm/h) | 0 a 300 | 20 | 40 | 70 |
-| Nível do córrego (cm) | 0 a 400 | 90 | 120 | 150 |
-| Umidade do solo (%) | 0 a 100 | 70 | 80 | 90 |
 
 ### Exceções customizadas
 
@@ -128,9 +171,9 @@ O resultado é um `ResultadoPrevisao`: o valor previsto e um texto que explica o
 
 ### Persistência (JDBC + H2)
 
-Usamos JDBC puro com H2 em arquivo (`jdbc:h2:./dados/territorio`). Como o banco fica gravado em disco, as medições e os alertas sobrevivem ao reiniciar o programa; um H2 em memória perderia tudo ao fechar. O arquivo do banco fica na pasta `dados/`, que não vai para o GitHub. As tabelas `medicao` e `alerta` são criadas pelo `src/main/resources/schema.sql`, que a `FabricaConexao` executa ao iniciar (`CREATE TABLE IF NOT EXISTS`, então dados existentes não são apagados). Por isso o projeto roda do zero na correção, sem configurar nada. Os DAOs usam `PreparedStatement` em todas as consultas (nunca concatenam String no SQL) e `try-with-resources` para fechar `Connection`, `PreparedStatement` e `ResultSet`. Todo `SQLException` vira `FonteIndisponivelException`, com a causa original preservada.
+Utilizamos JDBC com H2 em arquivo para armazenar medições e alertas de forma permanente, mantendo os dados mesmo após fechar o programa. O banco fica na pasta `dados/` e suas tabelas são criadas automaticamente na inicialização, sem apagar informações existentes. As consultas utilizam `PreparedStatement` e os recursos são fechados corretamente. Erros de banco são tratados por `FonteIndisponivelException`.
 
-**Por que JDBC e não JPA:** os dados são só duas tabelas simples, e queríamos controlar o SQL e a validação no domínio, sem entidades duplicadas e sem a configuração do Spring. Medições e alertas só são inseridos e consultados, nunca alterados ou apagados, porque formam o histórico que justifica cada previsão.
+**Por que JDBC e não JPA:** como o projeto possui apenas duas tabelas simples, o JDBC oferece maior controle sobre as consultas e validações, sem a necessidade de configurações adicionais. Além disso, medições e alertas são apenas registrados e consultados, preservando o histórico para justificar cada previsão.
 
 ### Serviço
 
@@ -138,7 +181,7 @@ O `ServicoMonitoramento` fica entre o menu e o banco e segue o fluxo **ler → v
 
 ### Bônus: exportação em CSV
 
-A opção 8 do menu exporta o histórico de um sensor para `dados/historico-<sensor>.csv` (separador `;`, com cabeçalho). Escolhemos só este bônus.
+A opção 8 do menu exporta o histórico de um sensor para `dados/historico-<sensor>.csv` (separador `;`, com cabeçalho).
 
 ## Padrão criacional: Factory (`FabricaPrevisao`)
 
@@ -152,19 +195,29 @@ A opção 8 do menu exporta o histórico de um sensor para `dados/historico-<sen
 
 ## Testes
 
-São **66 testes JUnit 5 em 12 classes**, no padrão **AAA** (Arrange, Act, Assert), com vários `assertThrows` das duas exceções customizadas. Os valores esperados são calculados à mão nos próprios testes (por exemplo, a média de 10..50 é 30; a comparação 15 → 35 projeta 55), então se um cálculo errar, o teste fica vermelho.
+**Como rodar.** Na pasta que contém o `pom.xml`:
 
-- **Mockito:** `ServicoMonitoramentoTest` mocka `MedicaoDAO` e `AlertaDAO` e verifica a lógica de alerta sem banco: previsão crítica grava o alerta certo (`ArgumentCaptor`); previsão abaixo da atenção ou histórico insuficiente **não** grava alerta (`never()`); leitura inválida ou sensor em falha não grava medição (`verifyNoInteractions`).
-- **DAOs:** `MedicaoDAOTest` e `AlertaDAOTest` usam um H2 de verdade em pasta temporária (`@TempDir`): id gerado, ordem do histórico, últimas N leituras, dados que sobrevivem ao reabrir o banco e banco inacessível.
-- **Domínio:** validações de `Medicao`, `Limiares`, `DadosTerritorio` (incluindo código de acesso), `Alerta` e sensores; as duas estratégias, a fábrica e o `ExportadorCSV`.
+```bash
+mvn clean test
+```
+
+O comando compila o projeto e executa todos os testes. No final, o Maven deve mostrar `BUILD SUCCESS` e `Tests run: 66, Failures: 0, Errors: 0`. Para rodar só uma classe:
+
+```bash
+mvn test -Dtest=ServicoMonitoramentoTest
+```
+
+Os relatórios detalhados ficam em `target/surefire-reports/`. Os testes **não usam** o banco da pasta `dados/`: os de DAO criam um H2 próprio numa pasta temporária, e os do serviço trocam os DAOs por mocks. Por isso dá para rodá-los sem apagar ou alterar o histórico do programa.
+
+**O que é testado.** São 66 testes JUnit 5 em 12 classes, no padrão **AAA** (Arrange, Act, Assert), com vários `assertThrows` das duas exceções customizadas. [...resto da seção como já está...]
 
 ## Reflexão crítica
 
-**Quando o sistema deve se calar?** Quando o histórico do sensor tem menos leituras que o mínimo da estratégia: menos de 5 para a média móvel e menos de 6 para a comparação entre períodos. Com poucas leituras, uma média ou uma tendência não é confiável: uma única leitura alta poderia virar um CRÍTICO. Nesses casos o código não devolve uma previsão "chutada": o `ResultadoPrevisao` vem sem valor, o texto diz quantas leituras faltam e nenhum alerta é emitido. O sistema também se cala quando o sensor está em falha: nenhuma medição é inventada para cobrir o buraco. Mesmo com dados suficientes, a comparação entre períodos exagera picos isolados, e a média móvel é estável, mas reage devagar. Por isso o alerta informa qual estratégia o gerou, e a escolha entre elas cabe a quem coordena.
+Nosso sistema não gera previsões quando faltam dados suficientes: são necessárias cinco leituras para a média móvel e seis para a comparação entre períodos. O mesmo ocorre em caso de falha do sensor ou leitura fora da faixa permitida. Mesmo com dados suficientes, as estratégias possuem limitações: a média móvel é mais estável, mas reage lentamente, enquanto a comparação entre períodos responde rápido, mas pode exagerar picos isolados. Por isso, cada alerta informa a estratégia utilizada.
 
-**O que os dados não representam?** Um sensor descreve um ponto, não a região inteira: o pluviômetro pode registrar 0 mm/h enquanto chove forte a dois quilômetros, e uma única régua não mostra se a água sai da margem em outro trecho do córrego. As leituras são **simuladas** com sorteios que nós escolhemos, não medidas reais, e os limiares (por exemplo, 20, 40 e 70 mm/h para chuva) são parâmetros de exemplo, **não normas da Defesa Civil**. Eles precisariam ser calibrados com séries históricas e revisados por especialistas antes de qualquer uso real. O sistema também não sabe quem está exposto ao risco, nem considera obras de drenagem, eventos no bairro ou a confiabilidade de cada sensor. Além disso, os limiares alterados no menu valem só para a sessão atual e voltam ao padrão ao reiniciar; só medições e alertas ficam gravados no banco.
+Os sensores representam apenas um ponto, não toda a região. Além disso, as leituras são **simuladas por sorteios dentro de faixas plausíveis**, e os limiares (20, 40 e 70 mm/h para chuva) são valores de demonstração, não normas da Defesa Civil. Para uso real, precisariam ser calibrados com dados históricos e avaliados por especialistas. O sistema também não considera fatores como drenagem local e pessoas expostas ao risco. Os limiares alterados no menu valem apenas durante a execução, enquanto medições e alertas ficam salvos no banco.
 
-**Por que o alerta apoia a decisão da pessoa, em vez de decidir por ela?** O alerta mostra a evidência (sensor, valor previsto, limite atingido e estratégia) e uma orientação genérica, escrita como sugestão. A decisão de avisar uma comunidade depende de contexto que o sistema não tem. Por isso os limiares são ajustáveis pela coordenação, com código de acesso, e quem responde pela ação continua sendo uma pessoa. Um alarme falso automático custaria a confiança da comunidade, e uma ausência de alerta não garante que está tudo bem.
+O alerta apoia a decisão humana ao apresentar os dados e uma sugestão de ação, sem emitir ordens. Como o sistema não conhece todo o contexto da região, a decisão final continua sendo de uma pessoa. Afinal, um alerta falso pode comprometer a confiança da comunidade, e a ausência de um alerta não garante que não exista perigo.
 
 ## Divisão de tarefas
 
@@ -173,11 +226,11 @@ São **66 testes JUnit 5 em 12 classes**, no padrão **AAA** (Arrange, Act, Asse
 | Enzo Yokokura Araujo | Domínio e exceções (componente territorial, sensores, medição, alerta, limiares e dados do território com código de acesso), estratégias de previsão e Factory, testes dessas partes, menu completo, configuração do Git e README |
 | Marco Antonio Ferreira Fonseca | Persistência (banco H2, criação das tabelas e acesso a medições e alertas), serviço de monitoramento, testes do acesso ao banco e do serviço (com Mockito) e exportação CSV (bônus) |
 
-Revisão do código e integração na `main` foram feitas pelos dois.
+A revisão do código e integração na `main` foram feitas pelos dois.
 
 ## Uso de IA
 
 Usamos o Claude como apoio, em conjunto, e declaramos abaixo onde e como revisamos.
 
-- **Onde usamos:** para entender o enunciado e planejar a divisão de tarefas; para configurar o ambiente; para gerar a primeira versão do domínio e das exceções; para tirar dúvidas de Git; e na criação deste README.
+- **Onde usamos:** para entender o enunciado e planejar a divisão de tarefas; para configurar o ambiente; para gerar o esqueleto da primeira versão do domínio e das exceções; para tirar dúvidas de Git; e na criação deste README.
 - **Como revisamos:** lemos as classes uma a uma, rodamos `mvn clean test` e o menu, alteramos o que não entendemos e testamos fechando e abrindo o programa para ver os dados persistirem.
